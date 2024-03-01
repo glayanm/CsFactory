@@ -24,15 +24,9 @@ public class Class1
             var number = 0;
             var type = propertyInfo.PropertyType;
 
-            if (type == typeof(int))
-            {
-                return number;
-            }
+            if (type == typeof(int)) return number;
 
-            if (type == typeof(string))
-            {
-                return propertyInfo.Name + "#number";
-            }
+            if (type == typeof(string)) return propertyInfo.Name + "#number";
 
             return Activator.CreateInstance(type);
         }
