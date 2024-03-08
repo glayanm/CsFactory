@@ -1,12 +1,14 @@
 ﻿Feature: CsFactoryFeature
 Simple calculator for adding two numbers
 
-    @mytag
     Scenario: Create default Model
-        When Create default Model
-        Then Name is "Name#1" number is "1"
+        When Query user name is "Yuan"
+        Then Name is "Yuan" number is "1"
 
     Scenario: Create 2 default Model
-        When Create default Model
-        When Create default Model
-        Then Name is "Name#2" number is "2"
+        When Query user name is "Ame"
+        Then Name is "Ame" number is "2"
+
+    Scenario: Create 3 default Model
+        When Query user name is "Dika"
+        Then Name is "Dika" number is "10"

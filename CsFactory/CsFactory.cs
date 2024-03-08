@@ -2,21 +2,40 @@
 
 namespace CsFactory;
 
-public class CsFactory
+public static class CsFactory
 {
-    private readonly Dictionary<Type, List<object>> _cache = new();
+    private static Dictionary<Type, List<object>> _cache = new();
 
-
-    public T Create<T>() where T : new()
+    public static T Query<T>(Func<T, bool>? condition = null) where T : new()
     {
         var objects = _cache.ContainsKey(typeof(T)) ? _cache[typeof(T)] : new List<object>();
         var instance = new T();
+        if (condition == null)
+        {
+            instance = (T)objects.FirstOrDefault()! ?? new T();
+        }
+        else
+        {
+            if (objects.Any(p => condition((T)p)))
+            {
+                instance = (T)objects.FirstOrDefault(p => condition((T)p))!;
+            }
+        }
 
+        return instance;
+    }
+
+    public static T Create<T>(Action<T> setValue = null) where T : new()
+    {
+        var objects = _cache.ContainsKey(typeof(T)) ? _cache[typeof(T)] : new List<object>();
+
+        var instance = new T();
         foreach (var property in typeof(T).GetProperties())
         {
             var defaultValue = GetDefaultValue(property, objects.Count);
             property.SetValue(instance, defaultValue);
         }
+        setValue?.Invoke(instance);
 
         objects.Add(instance);
 
@@ -27,7 +46,13 @@ public class CsFactory
         return instance;
     }
 
-    private object? GetDefaultValue(PropertyInfo propertyInfo, int objectsCount)
+    public static T Map<T>(this T obj, Action<T> SetValue) where T : class
+    {
+        SetValue.Invoke(obj);
+        return obj;
+    }
+
+    private static object? GetDefaultValue(PropertyInfo propertyInfo, int objectsCount)
     {
         var number = objectsCount + 1;
         var type = propertyInfo.PropertyType;
