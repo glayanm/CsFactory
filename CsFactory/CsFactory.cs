@@ -4,7 +4,7 @@ namespace CsFactory;
 
 public static class CsFactory
 {
-    private static Dictionary<Type, List<object>> _cache = new();
+    private static readonly Dictionary<Type, List<object>> _cache = new();
 
     public static T Query<T>(Func<T, bool>? condition = null) where T : new()
     {
@@ -16,10 +16,7 @@ public static class CsFactory
         }
         else
         {
-            if (objects.Any(p => condition((T)p)))
-            {
-                instance = (T)objects.FirstOrDefault(p => condition((T)p))!;
-            }
+            if (objects.Any(p => condition((T)p))) instance = (T)objects.FirstOrDefault(p => condition((T)p))!;
         }
 
         return instance;
@@ -35,6 +32,7 @@ public static class CsFactory
             var defaultValue = GetDefaultValue(property, objects.Count);
             property.SetValue(instance, defaultValue);
         }
+
         setValue?.Invoke(instance);
 
         objects.Add(instance);
@@ -70,6 +68,18 @@ public static class CsFactory
 
         if (type == typeof(DateTime)) return DateTime.Today.AddMinutes(number);
         if (type == typeof(string)) return $"{propertyInfo.Name}#{number}";
+
+        if (type.IsClass)
+        {
+            var count = _cache[type].Count;
+            if (count != 0)
+            {
+                var index = objectsCount % count;
+                return _cache[type].ToArray()[index];
+            }
+
+            return Activator.CreateInstance(type);
+        }
 
         return Activator.CreateInstance(type);
     }

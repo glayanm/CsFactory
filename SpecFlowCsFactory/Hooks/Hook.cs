@@ -13,5 +13,7 @@ public class Hooks
             p.Name = "Dika";
             p.Number = 10;
         });
+
+        CsFactory.CsFactory.Create<Order>(p => p.Id = 123456);
     }
 }
