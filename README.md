@@ -1,9 +1,11 @@
 本套件用途主要是在 Unit Test 與 End To End 測試, 可以快速地產生測試資料.
 是根據 JAVA 的 JFactory 做的 C# 版，還在開發途中 ( JFactory在文底參考資料)
 
-### 先介紹建立物件的功能
+這個套件目前還在開發中...
 
-建立物件所有簡單型別都會給直, 數字則是同類型的物件逐筆累加.
+### 建立物件
+
+建立物件所有簡單型別都會給值, 數字則是同類型的物件逐筆累加.
 
 ```C#
 // #1 Create Object
@@ -25,6 +27,11 @@ var user3 = CsFactory.CsFactory.Create<User>(p => p.Name = "Roy");
 Console.WriteLine($"{nameof(user3)} :: {user3}");
 
 ```
+
+---
+
+### 取用已建立物件
+
 也可以直接取用前面建好的物件
 
 ```C#
@@ -39,6 +46,9 @@ var queryUser2 = CsFactory.CsFactory.Query<User>(p => p.Name == "Joey");
 // queryUser2 :: Name: , Status: Enable, Age: 0
 Console.WriteLine($"{nameof(queryUser2)} :: {queryUser2}");
 ```
+---
+
+### 物件關聯
 
 當物件中有關聯的時候, 可以用下列方式建立.
 
