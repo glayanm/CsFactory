@@ -4,6 +4,9 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <AssemblyVersion>6.0.0.1</AssemblyVersion>
+        <FileVersion>6.0.0.1</FileVersion>
+        <NeutralLanguage>zh-Hant</NeutralLanguage>
     </PropertyGroup>
 
 </Project>

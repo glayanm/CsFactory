@@ -22,7 +22,7 @@ public static class CsFactory
         return instance;
     }
 
-    public static T Create<T>(Action<T> setValue = null) where T : new()
+    public static T Create<T>(Action<T>? setValue = null) where T : new()
     {
         var objects = _cache.ContainsKey(typeof(T)) ? _cache[typeof(T)] : new List<object>();
 
