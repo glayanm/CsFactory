@@ -70,4 +70,55 @@ var order2 = CsFactory.CsFactory.Create<Order>(p =>
 Console.WriteLine($"{nameof(order2)} :: {order2}");
 ```
 
+### Deep Clone 物件
+
+單元測試的時候測試用的物件與驗證用的物件通常相同，但會有DeepCopy的問題，這邊有兩個解決方式。
+另外有新增清除快取的 Clear() 方便在端到端測試使用
+
+第一種是 Fork<T>(func<T,bool>) 針對你的搜尋目標去 fork , 目標不存在會的到 new (); 
+
+```C#
+// Clear all cache
+CsFactory.CsFactory.Clear();
+
+// Fork Data ( Deep Clone )
+var roy = CsFactory.CsFactory.Create<User>(p => p.Name = "Roy");
+// roy :: Name: Roy, Status: Enable, Age: 1
+Console.WriteLine($"{nameof(roy)} :: {roy}");
+
+var royF = CsFactory.CsFactory.Fork<User>(p => p.Name == "Roy");
+// royF :: Name: Roy, Status: Enable, Age: 1
+Console.WriteLine($"{nameof(royF)} :: {royF}");
+
+roy.Age = 87;
+
+//roy :: Name: Roy, Status: Enable, Age: 87
+Console.WriteLine($"{nameof(roy)} :: {roy}");
+//royF :: Name: Roy, Status: Enable, Age: 1
+Console.WriteLine($"{nameof(royF)} :: {royF}");
+```
+
+第二種是 ToForkExpected<T>(Action<T>) 這個是會複製當前的物件,並且設定你的預期欄位.
+
+```C#
+// Clear all cache
+CsFactory.CsFactory.Clear();
+
+// ToForkExpected Data ( Deep Clone )
+var royE = CsFactory.CsFactory.Create<User>(p => p.Name = "Roy");
+// royE :: Name: Roy, Status: Enable, Age: 1
+Console.WriteLine($"{nameof(royE)} :: {royE}");
+var royFE = CsFactory.CsFactory.Query<User>(p => p.Name == "Roy")
+    .ToForkExpected(p => p.Status = UserStatus.Ban);
+// royFE :: Name: Roy, Status: Ban, Age: 1
+Console.WriteLine($"{nameof(royFE)} :: {royFE}");
+
+roy.Age = 87;
+
+// royE :: Name: Roy, Status: Enable, Age: 1
+Console.WriteLine($"{nameof(royE)} :: {royE}");
+// royFE :: Name: Roy, Status: Ban, Age: 1
+Console.WriteLine($"{nameof(royFE)} :: {royFE}");
+```
+
 參考：https://github.com/leeonky/jfactory
