@@ -6,17 +6,24 @@ public static class CsFactory
 {
     private static readonly Dictionary<Type, List<object>> _cache = new();
 
+
+    public static void Clear()
+    {
+        _cache.Clear();
+    }
+
     public static T Query<T>(Func<T, bool>? condition = null) where T : new()
     {
         var objects = _cache.ContainsKey(typeof(T)) ? _cache[typeof(T)] : new List<object>();
         var instance = new T();
         if (condition == null)
         {
-            instance = (T)objects.FirstOrDefault()! ?? new T();
+            instance = objects.Any() ? (T)objects.First()! : Create<T>();
         }
         else
         {
             if (objects.Any(p => condition((T)p))) instance = (T)objects.FirstOrDefault(p => condition((T)p))!;
+            // throw new Exception("query result is null.");
         }
 
         return instance;
@@ -44,10 +51,12 @@ public static class CsFactory
         return instance;
     }
 
-    public static T Map<T>(this T obj, Action<T> SetValue) where T : class
+
+    public static T Fork<T>(Func<T, bool>? condition = null) where T : class, new()
     {
-        SetValue.Invoke(obj);
-        return obj;
+        var obj = Query(condition);
+
+        return Cloned<T>(obj) ?? new T();
     }
 
     private static object? GetDefaultValue(PropertyInfo propertyInfo, int objectsCount)
@@ -82,5 +91,44 @@ public static class CsFactory
         }
 
         return Activator.CreateInstance(type);
+    }
+
+    public static T ToForkExpected<T>(this object obj, Action<T>? action) where T : class
+    {
+        var cloned = Cloned<T>(obj);
+
+        action?.Invoke(cloned!);
+
+        return cloned!;
+    }
+
+    private static T? Cloned<T>(object obj) where T : class
+    {
+        var type = typeof(T);
+        var cloned = Activator.CreateInstance(type) as T;
+
+        foreach (var propertyInfo in type.GetProperties())
+        {
+            if (!propertyInfo.CanRead || !propertyInfo.CanWrite) continue;
+
+            var value = propertyInfo.GetValue(obj);
+            propertyInfo.SetValue(cloned, value);
+        }
+
+        foreach (var fieldInfo in type.GetFields())
+        {
+            var value = fieldInfo.GetValue(obj);
+            fieldInfo.SetValue(cloned, value);
+        }
+
+        return cloned;
+    }
+}
+
+public class Spec
+{
+    public T DeepClone<T>()
+    {
+        return (T)MemberwiseClone();
     }
 }
