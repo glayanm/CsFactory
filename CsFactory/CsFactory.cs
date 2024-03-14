@@ -93,7 +93,7 @@ public static class CsFactory
         return Activator.CreateInstance(type);
     }
 
-    public static T ToForkExpected<T>(this object obj, Action<T>? action) where T : class
+    public static T ToForkExpected<T>(this T obj, Action<T>? action) where T : class
     {
         var cloned = Cloned<T>(obj);
 

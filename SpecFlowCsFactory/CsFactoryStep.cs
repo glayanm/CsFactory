@@ -91,7 +91,7 @@ public class CsFactoryStep
     public void GivenForkUserNameIsBeExpectedAndSetPasswordIs(string name, string password)
     {
         _expected = CsFactory.CsFactory.Query<User>(p => p.Name == name)
-            .ToForkExpected<User>(p => p.Password = password);
+            .ToForkExpected(p => p.Password = password);
     }
 
     [Then(@"expected user password is ""(.*)""")]
