@@ -125,10 +125,3 @@ public static class CsFactory
     }
 }
 
-public class Spec
-{
-    public T DeepClone<T>()
-    {
-        return (T)MemberwiseClone();
-    }
-}
