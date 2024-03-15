@@ -119,6 +119,37 @@ roy.Age = 87;
 Console.WriteLine($"{nameof(royE)} :: {royE}");
 // royFE :: Name: Roy, Status: Ban, Age: 1
 Console.WriteLine($"{nameof(royFE)} :: {royFE}");
+
+```
+
+### 單元測是的範例
+
+```C#
+
+public class Tests
+{
+    private IdbContext? _dbContext;
+    private UserService _userService;
+
+    [SetUp]
+    public void Setup()
+    {
+        _dbContext = Substitute.For<IdbContext>();
+        _userService = new UserService(_dbContext);
+    }
+
+    [Test]
+    public void Test1()
+    {
+        var user = CsFactory.CsFactory.Create<User>(p => p.Name = "Roy");
+        var expected = user.ToForkExpected(p => p.Status = UserStatus.Ban);
+
+        var actual = _userService.BanUser(user);
+
+        expected.ToExpectedObject().ShouldMatch(actual);
+        _dbContext.Received(1)?.Modify(Arg.Is<User>(p => p.Status == UserStatus.Ban));
+    }
+}
 ```
 
 參考：https://github.com/leeonky/jfactory
