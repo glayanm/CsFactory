@@ -50,10 +50,9 @@ public static class CsFactorySpecFlow
             {
                 var expectedValue = table.First(p => p.Key == propertyInfo.Name).Value;
                 var actualValue = propertyInfo.GetValue(actual);
-                var maxLen = Math.Max(3, Math.Max(expectedValue.Length, actualValue.ToString().Length));
-                maxLen = maxLen < 3 ? 3 : maxLen;
+                var maxLen = Math.Max(3, Math.Max(expectedValue.Length, actualValue!.ToString()!.Length));
                 result.Append($" | {expectedValue.PadRight(maxLen, ' ')}");
-                actualString.Append($" | {actualValue.ToString().PadRight(maxLen, ' ')}");
+                actualString.Append($" | {actualValue.ToString()?.PadRight(maxLen, ' ')}");
                 errorString.Append(property.Name == propertyInfo.Name
                     ? "   ↑↑↑".PadRight(maxLen - 3, ' ')
                     : "".PadRight(maxLen + 3, ' '));
